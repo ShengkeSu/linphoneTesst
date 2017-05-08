@@ -188,20 +188,20 @@ public class CallOutGoingActivity extends AppCompatActivity {
         ArrayList<String> permissionsList = new ArrayList<String>();
 
         int recordAudio = getPackageManager().checkPermission(Manifest.permission.RECORD_AUDIO, getPackageName());
-        Log.i("[Permission] Record audio permission is " + (recordAudio == PackageManager.PERMISSION_GRANTED ? "granted" : "denied"));
+//        Log.i("[Permission] Record audio permission is " + (recordAudio == PackageManager.PERMISSION_GRANTED ? "granted" : "denied"));
         int camera = getPackageManager().checkPermission(Manifest.permission.CAMERA, getPackageName());
-        Log.i("[Permission] Camera permission is " + (camera == PackageManager.PERMISSION_GRANTED ? "granted" : "denied"));
+//        Log.i("[Permission] Camera permission is " + (camera == PackageManager.PERMISSION_GRANTED ? "granted" : "denied"));
 
         if (recordAudio != PackageManager.PERMISSION_GRANTED) {
             if (LinphonePreferences.instance().firstTimeAskingForPermission(Manifest.permission.RECORD_AUDIO) || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
-                Log.i("[Permission] Asking for record audio");
+//                Log.i("[Permission] Asking for record audio");
                 permissionsList.add(Manifest.permission.RECORD_AUDIO);
             }
         }
         if (LinphonePreferences.instance().shouldInitiateVideoCall() || LinphonePreferences.instance().shouldAutomaticallyAcceptVideoRequests()) {
             if (camera != PackageManager.PERMISSION_GRANTED) {
                 if (LinphonePreferences.instance().firstTimeAskingForPermission(Manifest.permission.CAMERA) || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-                    Log.i("[Permission] Asking for camera");
+//                    Log.i("[Permission] Asking for camera");
                     permissionsList.add(Manifest.permission.CAMERA);
                 }
             }

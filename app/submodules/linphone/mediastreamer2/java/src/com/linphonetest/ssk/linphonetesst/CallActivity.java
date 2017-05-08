@@ -2,9 +2,14 @@ package com.linphonetest.ssk.linphonetesst;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.CountDownTimer;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -32,7 +37,7 @@ import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import main.java.com.linphonetest.ssk.linphonetesst.LinphoneManager;
 import main.java.com.linphonetest.ssk.linphonetesst.LinphonePreferences;
 
-public class CallActivity extends AppCompatActivity implements View.OnClickListener {
+public class CallActivity extends AppCompatActivity implements View.OnClickListener ,SensorEventListener {
     private final static int SECONDS_BEFORE_HIDING_CONTROLS = 4000;
     private final static int SECONDS_BEFORE_DENYING_CALL_UPDATE = 30000;
     private static final int PERMISSIONS_REQUEST_CAMERA = 202;
@@ -40,6 +45,9 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
     private static final int PERMISSIONS_ENABLED_MIC = 204;
 
     private static CallActivity instance;
+    private boolean isTransferAllowed = true;
+    private boolean mProximitySensingEnabled;
+
     public static CallActivity instance() {
         return instance;
     }
@@ -56,6 +64,9 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
     private AndroidVideoWindowImpl androidVideoWindowImpl;
     private CountDownTimer timer;
 
+    private SensorManager mSensorManager;
+    private Sensor mProximity;
+
 
 
     @Override
@@ -69,6 +80,10 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
 
         hangUp = (Button) findViewById(R.id.hang_up);
         hangUp.setOnClickListener(this);
+
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+
 
         mVideoView = (SurfaceView) findViewById(R.id.surfaceView);
         mCaptureView = (SurfaceView) findViewById(R.id.surfaceView2);
@@ -132,8 +147,8 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
                         enabledVideoButton(true);
                     }
                 } else if (state == LinphoneCall.State.StreamsRunning) {
-//                    switchVideo(isVideoEnabled(call));
-//                    enableAndRefreshInCallActions();
+                    switchVideo(isVideoEnabled(call));
+                    enableAndRefreshInCallActions();
 
 //                    if (status != null) {
 //                        videoProgress.setVisibility(View.GONE);
@@ -393,6 +408,8 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
             LinphoneManager.getLc().enableVideo(true, true);
         }
 
+        android.util.Log.i("aaa",call.toString()+"===="+params.toString());
+
         try {
             LinphoneManager.getLc().acceptCallUpdate(call, params);
         } catch (LinphoneCoreException e) {
@@ -443,4 +460,71 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
         dialog.show();
     }
 
+    private void enableAndRefreshInCallActions() {
+        int confsize = 0;
+
+        if(LinphoneManager.getLc().isInConference()) {
+            confsize = LinphoneManager.getLc().getConferenceSize() - (LinphoneManager.getLc().isInConference() ? 1 : 0);
+        }
+
+
+        if(LinphoneManager.getLc().getCurrentCall() != null && LinphonePreferences.instance().isVideoEnabled() && !LinphoneManager.getLc().getCurrentCall().mediaInProgress()) {
+            enabledVideoButton(true);
+        } else {
+            enabledVideoButton(false);
+        }
+    }
+
+    private void switchVideo(final boolean displayVideo) {
+        final LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
+        if (call == null) {
+            return;
+        }
+
+        //Check if the call is not terminated
+        if(call.getState() == LinphoneCall.State.CallEnd || call.getState() == LinphoneCall.State.CallReleased) return;
+
+        if (!displayVideo) {
+            showAudioView();
+        } else {
+            if (!call.getRemoteParams().isLowBandwidthEnabled()) {
+                LinphoneManager.getInstance().addVideo();
+//                if (videoCallFragment == null || !videoCallFragment.isVisible())
+                    showVideoView();
+            } else {
+//                displayCustomToast(getString(R.string.error_low_bandwidth), Toast.LENGTH_LONG);
+                Toast.makeText(instance,"cuowu",Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    private void showAudioView() {
+        enableProximitySensing(true);
+//        replaceFragmentVideoByAudio();
+//        displayAudioCall();
+//        showStatusBar();
+//        removeCallbacks();
+    }
+    private void enableProximitySensing(boolean enable){
+        if (enable){
+            if (!mProximitySensingEnabled){
+                mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
+                mProximitySensingEnabled = true;
+            }
+        }else{
+            if (mProximitySensingEnabled){
+                mSensorManager.unregisterListener(instance);
+                mProximitySensingEnabled = false;
+            }
+        }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
 }
