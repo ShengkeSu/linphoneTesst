@@ -1,0 +1,63 @@
+<resources>
+    <string name="app_name">linphoneTesst</string>
+
+    <!-- Status -->
+    <string name="invalid_email">Invalid email</string>
+    <string name="account_already_exist">Account already exist</string>
+    <string name="phone_number_not_exist">This account does not exist</string>
+    <string name="invalid_username">Invalid username</string>
+    <string name="invalid_domain">Invalid domain</string>
+    <string name="invalid_route">Invalid route</string>
+    <string name="invalid_display_name">Invalid display name</string>
+    <string name="username_too_short">Username too short</string>
+    <string name="username_too_long">Username too long</string>
+    <string name="username_invalid_size">Username length invalid</string>
+    <string name="phone_number_too_long">Phone number too long</string>
+    <string name="phone_number_too_short">Phone number too short</string>
+    <string name="phone_number_invalid">Invalid phone number</string>
+    <string name="password_too_short">Password too short</string>
+    <string name="password_too_long">Password too long</string>
+    <string name="request_failed">Failed to query the server. Please try again later</string>
+    <string name="transport_unsupported">Unsupported transport</string>
+    <string name="country_code_invalid">Country code invalid</string>
+    <string name="assistant_phone_number_unavailable">This phone number is already in used.\r\nPlease type a different number.\r\nYou can delete your existing account if you want to reuse your phone number.</string>
+    <!-- Service -->
+    <string name="incall_notif_active">Audio call ongoing</string>
+    <string name="incall_notif_paused">Paused call ongoing</string>
+    <string name="incall_notif_video">Video capturing call ongoing</string>
+    <string name="notification_started">started</string>
+    <string name="unread_messages">%i unread messages</string>
+    <string name="missed_calls_notif_title">Missed call</string>
+    <string name="missed_calls_notif_body">%i missed calls</string>
+    <!-- In-app -->
+    <string name="inapp">In-app</string>
+    <string name="inapp_notification_title">In-app purchase</string>
+    <string name="inapp_notification_trial_expire">The trail period expires on %s</string>
+    <string name="inapp_notification_account_expire">The subscription period expires on %s</string>
+
+    <!-- Dailer -->
+    <string name="address_bar_hint">Enter a number or an address</string>
+    <string name="service_name">Linphone 服务</string>
+
+    <!-- Errors -->
+    <string name="skipable_error_service_not_ready">Warning: service is not ready</string>
+    <string name="error">Error</string>
+    <string name="warning_wrong_destination_address">Cannot build destination address from %s</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="error_call_declined">Call declined</string>
+    <string name="error_user_busy">User busy</string>
+    <string name="error_user_not_found">User not found</string>
+    <string name="error_incompatible_media">Incompatible media parameters</string>
+    <string name="error_low_bandwidth">Your correspondent has low bandwidth, video cannot be started</string>
+    <string name="error_network_unreachable">Network is unreachable</string>
+    <string name="error_bad_credentials">Bad credentials</string>
+    <string name="error_unauthorized">Unauthorized</string>
+    <string name="error_io_error">Network error</string>
+    <string name="download_image_failed">Download failed. Please check your network connection or try again later.</string>
+    <string name="remote_provisioning_failure">Failed to download or apply remote provisioning profile...</string>
+    <string name="remote_provisioning_again_title">Remote provisioning</string>
+    <string name="remote_provisioning_again_message">Do you want to change the provisioning URI?</string>
+
+
+
+</resources>
