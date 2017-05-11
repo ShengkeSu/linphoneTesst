@@ -1,0 +1,25 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    tools:context="main.java.com.linphonetest.ssk.linphonetesst.CallVideoFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <main.java.com.linphonetest.ssk.linphonetesst.GL2JNIView
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/surfaceView" />
+
+    <SurfaceView
+        android:visibility="visible"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:id="@+id/surfaceView2"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>

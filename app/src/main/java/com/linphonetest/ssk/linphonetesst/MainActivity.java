@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         delete = (Button) findViewById(R.id.button2);
         call = (Button) findViewById(R.id.button3);
         callTo = (EditText) findViewById(R.id.editText);
-        callTo.setText("+8620100420002");
+        callTo.setText("+8650100220005");
         mHandler = new Handler();
         mPrefs = LinphonePreferences.instance();
 
@@ -142,8 +142,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         LinphoneCoreFactory factory = LinphoneCoreFactory.instance();
 
-        String username = "+8620100420003";
-        String userid = "+8620100420003@conf.shec.edu.cn";
+        String username = "+8650100220003";
+        String userid = "+8650100220003@conf.shec.edu.cn";
         String domain = "conf.shec.edu.cn";
         String password = "123456";
         String proxy = "<sip:222.249.237.98;transport=tcp>";
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else if (state == LinphoneCall.State.CallEnd || state == LinphoneCall.State.Error || state == LinphoneCall.State.CallReleased) {
 //                    resetClassicMenuLayoutAndGoBackToCallIfStillRunning();
                     Toast.makeText(instance,"callactivity",Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(instance, CallActivity.class));
+//                    startActivity(new Intent(instance, CallActivity.class));
 
                 }
 

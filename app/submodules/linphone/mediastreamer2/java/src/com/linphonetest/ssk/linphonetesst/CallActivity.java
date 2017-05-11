@@ -2,6 +2,8 @@ package com.linphonetest.ssk.linphonetesst;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
@@ -10,32 +12,32 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.CountDownTimer;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCallParams;
-import org.linphone.core.LinphoneChatMessage;
-import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.mediastream.Log;
-import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 
+import main.java.com.linphonetest.ssk.linphonetesst.CallAudioFragment;
+import main.java.com.linphonetest.ssk.linphonetesst.CallVideoFragment;
 import main.java.com.linphonetest.ssk.linphonetesst.LinphoneManager;
 import main.java.com.linphonetest.ssk.linphonetesst.LinphonePreferences;
+import main.java.com.linphonetest.ssk.linphonetesst.LinphoneUtils;
 
 public class CallActivity extends AppCompatActivity implements View.OnClickListener ,SensorEventListener {
     private final static int SECONDS_BEFORE_HIDING_CONTROLS = 4000;
@@ -47,6 +49,8 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
     private static CallActivity instance;
     private boolean isTransferAllowed = true;
     private boolean mProximitySensingEnabled;
+    private CallVideoFragment videoCallFragment;
+    private CallAudioFragment audioCallFragment;
 
     public static CallActivity instance() {
         return instance;
@@ -58,10 +62,8 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private Button video,hangUp;
+    private EditText editText;
     private LinphoneCoreListenerBase mListener;
-    private SurfaceView mVideoView;
-    private SurfaceView mCaptureView;
-    private AndroidVideoWindowImpl androidVideoWindowImpl;
     private CountDownTimer timer;
 
     private SensorManager mSensorManager;
@@ -85,30 +87,7 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
         mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
 
-        mVideoView = (SurfaceView) findViewById(R.id.surfaceView);
-        mCaptureView = (SurfaceView) findViewById(R.id.surfaceView2);
-        mCaptureView.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS); // Warning useless because value is ignored and automatically set by new APIs.
 
-        fixZOrder(mVideoView, mCaptureView);
-        androidVideoWindowImpl = new AndroidVideoWindowImpl(mVideoView, mCaptureView, new AndroidVideoWindowImpl.VideoWindowListener() {
-            public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
-                mVideoView = surface;
-                LinphoneManager.getLc().setVideoWindow(vw);
-            }
-
-            public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-
-            }
-
-            public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
-                mCaptureView = surface;
-                LinphoneManager.getLc().setPreviewWindow(mCaptureView);
-            }
-
-            public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-
-            }
-        });
 
         mListener = new LinphoneCoreListenerBase() {
 //            @Override
@@ -147,6 +126,7 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
                         enabledVideoButton(true);
                     }
                 } else if (state == LinphoneCall.State.StreamsRunning) {
+                    android.util.Log.i("aaa","call=StreamsRunnig---isVideoEnable=="+isVideoEnabled(call));
                     switchVideo(isVideoEnabled(call));
                     enableAndRefreshInCallActions();
 
@@ -212,11 +192,51 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
         };
 
 
-    }
-    private void fixZOrder(SurfaceView video, SurfaceView preview) {
-        video.setZOrderOnTop(false);
-        preview.setZOrderOnTop(true);
-        preview.setZOrderMediaOverlay(true); // Needed to be able to display control layout over
+        if (findViewById(R.id.fragmentContainer) != null) {
+//            initUI();
+
+            if (LinphoneManager.getLc().getCallsNb() > 0) {
+                LinphoneCall call = LinphoneManager.getLc().getCalls()[0];
+
+                if (LinphoneUtils.isCallEstablished(call)) {
+                    enableAndRefreshInCallActions();
+                }
+            }
+
+//            if (savedInstanceState != null) {
+//                // Fragment already created, no need to create it again (else it will generate a memory leak with duplicated fragments)
+//                isSpeakerEnabled = savedInstanceState.getBoolean("Speaker");
+//                isMicMuted = savedInstanceState.getBoolean("Mic");
+//                isVideoCallPaused = savedInstanceState.getBoolean("VideoCallPaused");
+//                refreshInCallActions();
+//                return;
+//            } else {
+//                isSpeakerEnabled = LinphoneManager.getLc().isSpeakerEnabled();
+//                isMicMuted = LinphoneManager.getLc().isMicMuted();
+//            }
+
+            Fragment callFragment = new CallVideoFragment();
+            if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
+                callFragment = new CallVideoFragment();
+                videoCallFragment = (CallVideoFragment) callFragment;
+//                displayVideoCall(false);
+                LinphoneManager.getInstance().routeAudioToSpeaker();
+//                isSpeakerEnabled = true;
+            } else {
+                callFragment = new CallAudioFragment();
+                audioCallFragment = (CallAudioFragment) callFragment;
+            }
+
+//            if(BluetoothManager.getInstance().isBluetoothHeadsetAvailable()){
+//                BluetoothManager.getInstance().routeAudioToBluetooth();
+//            }
+
+            callFragment.setArguments(getIntent().getExtras());
+            getFragmentManager().beginTransaction().add(R.id.fragmentContainer,callFragment).commitAllowingStateLoss();
+        }
+
+
+
     }
     @Override
     protected void onResume() {
@@ -231,14 +251,9 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
 //        refreshIncallUi();
 //        handleViewIntent();
 
-//        if (!isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
-//            enableProximitySensing(true);
+        if (!isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
+            enableProximitySensing(true);
 //            removeCallbacks();
-//        }
-        if (androidVideoWindowImpl != null) {
-            synchronized (androidVideoWindowImpl) {
-                LinphoneManager.getLc().setVideoWindow(androidVideoWindowImpl);
-            }
         }
     }
 
@@ -251,15 +266,6 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
             lc.removeListener(mListener);
         }
 
-        if (androidVideoWindowImpl != null) {
-            synchronized (androidVideoWindowImpl) {
-				/*
-				 * this call will destroy native opengl renderer which is used by
-				 * androidVideoWindowImpl
-				 */
-                LinphoneManager.getLc().setVideoWindow(null);
-            }
-        }
     }
     @Override
     protected void onDestroy() {
@@ -271,7 +277,7 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
 //        mControls = null;
 //        mControlsHandler = null;
 //
-//        enableProximitySensing(false);
+        enableProximitySensing(false);
 
 //        unbindDrawables(findViewById(R.id.topLayout));
         instance = null;
@@ -321,6 +327,8 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
 //            videoProgress.setVisibility(View.VISIBLE);
             if (!call.getRemoteParams().isLowBandwidthEnabled()) {
                 LinphoneManager.getInstance().addVideo();
+                Toast.makeText(this,"addVideo",Toast.LENGTH_SHORT).show();
+
             } else {
 //                displayCustomToast(getString(R.string.error_low_bandwidth), Toast.LENGTH_LONG);
                 Toast.makeText(this,"网络状态不好",Toast.LENGTH_SHORT).show();
@@ -366,32 +374,42 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
 //        }
 //        refreshInCallActions();
 
-//        enableProximitySensing(false);
-//        replaceFragmentAudioByVideo();
+        enableProximitySensing(false);
+        replaceFragmentAudioByVideo();
 
-        androidVideoWindowImpl = new AndroidVideoWindowImpl(mVideoView, mCaptureView, new AndroidVideoWindowImpl.VideoWindowListener() {
-            public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
-                mVideoView = surface;
-                LinphoneManager.getLc().setVideoWindow(vw);
-            }
 
-            public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl vw) {
 
-            }
-
-            public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
-                mCaptureView = surface;
-                LinphoneManager.getLc().setPreviewWindow(mCaptureView);
-            }
-
-            public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-
-            }
-        });
 
 //        hideStatusBar();
     }
+    private void replaceFragmentVideoByAudio() {
+        audioCallFragment = new CallAudioFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmentContainer, audioCallFragment);
+        try {
+            transaction.commitAllowingStateLoss();
+        } catch (Exception e) {
+        }
+    }
 
+    private void replaceFragmentAudioByVideo() {
+//		Hiding controls to let displayVideoCallControlsIfHidden add them plus the callback
+        videoCallFragment = new CallVideoFragment();
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmentContainer, videoCallFragment);
+        try {
+            transaction.commitAllowingStateLoss();
+        } catch (Exception e) {
+        }
+    }
+    public void bindAudioFragment(CallAudioFragment fragment) {
+        audioCallFragment = fragment;
+    }
+
+    public void bindVideoFragment(CallVideoFragment fragment) {
+        videoCallFragment = fragment;
+    }
     public void acceptCallUpdate(boolean accept) {
         if (timer != null) {
             timer.cancel();
@@ -493,13 +511,13 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
                     showVideoView();
             } else {
 //                displayCustomToast(getString(R.string.error_low_bandwidth), Toast.LENGTH_LONG);
-                Toast.makeText(instance,"cuowu",Toast.LENGTH_SHORT).show();
+                Toast.makeText(instance,"错误 CallActivity switchVideo",Toast.LENGTH_SHORT).show();
             }
         }
     }
     private void showAudioView() {
         enableProximitySensing(true);
-//        replaceFragmentVideoByAudio();
+        replaceFragmentVideoByAudio();
 //        displayAudioCall();
 //        showStatusBar();
 //        removeCallbacks();
@@ -527,4 +545,5 @@ public class CallActivity extends AppCompatActivity implements View.OnClickListe
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
 }

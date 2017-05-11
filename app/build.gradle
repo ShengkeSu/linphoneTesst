@@ -28,10 +28,10 @@ android {
 //            assets.srcDirs = ['assets']
 
             manifest.srcFile 'src/main/AndroidManifest.xml'
-            java.srcDirs = ['submodules/linphone/mediastreamer2/java/src','submodules/linphone/java/j2se','submodules/linphone/java/common','submodules/linphone/java/impl','submodules/externals/axmlrpc/src/main/java','submodules/linphone/coreapi/help/java','src']
-            resources.srcDirs = ['submodules/linphone/mediastreamer2/java/src','submodules/linphone/java/j2se','submodules/linphone/java/common','submodules/linphone/java/impl','submodules/externals/axmlrpc/src/main/java','submodules/linphone/coreapi/help/java','src']
-            aidl.srcDirs = ['submodules/linphone/mediastreamer2/java/src','submodules/linphone/java/j2se','submodules/linphone/java/common','submodules/linphone/java/impl','submodules/externals/axmlrpc/src/main/java','submodules/linphone/coreapi/help/java','src']
-            renderscript.srcDirs = ['submodules/linphone/mediastreamer2/java/src','submodules/linphone/java/j2se','submodules/linphone/java/common','submodules/linphone/java/impl','submodules/externals/axmlrpc/src/main/java','submodules/linphone/coreapi/help/java','src']
+            java.srcDirs = ['submodules/linphone/mediastreamer2/java/src', 'submodules/linphone/java/j2se', 'submodules/linphone/java/common', 'submodules/linphone/java/impl', 'submodules/externals/axmlrpc/src/main/java', 'submodules/linphone/coreapi/help/java', 'src']
+            resources.srcDirs = ['submodules/linphone/mediastreamer2/java/src', 'submodules/linphone/java/j2se', 'submodules/linphone/java/common', 'submodules/linphone/java/impl', 'submodules/externals/axmlrpc/src/main/java', 'submodules/linphone/coreapi/help/java', 'src']
+            aidl.srcDirs = ['submodules/linphone/mediastreamer2/java/src', 'submodules/linphone/java/j2se', 'submodules/linphone/java/common', 'submodules/linphone/java/impl', 'submodules/externals/axmlrpc/src/main/java', 'submodules/linphone/coreapi/help/java', 'src']
+            renderscript.srcDirs = ['submodules/linphone/mediastreamer2/java/src', 'submodules/linphone/java/j2se', 'submodules/linphone/java/common', 'submodules/linphone/java/impl', 'submodules/externals/axmlrpc/src/main/java', 'submodules/linphone/coreapi/help/java', 'src']
 //            res.srcDirs = ['res']
 //            assets.srcDirs = ['assets']
 //            jniLibs.srcDir 'libs'
@@ -60,8 +60,9 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
-//    testCompile 'junit:junit:4.12'
+    //    testCompile 'junit:junit:4.12'
     compile files('libs/liblinphone.jar')
-    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.google.android.gms:play-services-appindexing:9.8.0'
+    compile 'com.android.support:support-v4:25.3.1'
 }

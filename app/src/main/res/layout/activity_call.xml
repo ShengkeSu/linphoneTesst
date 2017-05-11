@@ -35,20 +35,21 @@
         android:layout_marginTop="36dp"
         android:id="@+id/hang_up" />
 
-    <SurfaceView
+    <LinearLayout
+        android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/surfaceView"
-        android:layout_below="@+id/hang_up" />
+        android:orientation="horizontal"/>
 
-    <SurfaceView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:id="@+id/surfaceView2"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:layout_below="@+id/hang_up"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="11dp"
+        android:id="@+id/editText3" />
 
 
 </RelativeLayout>

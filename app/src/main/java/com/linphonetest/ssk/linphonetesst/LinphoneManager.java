@@ -574,8 +574,8 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	public void enableCamera(LinphoneCall call, boolean enable) {
 		if (call != null) {
 			call.enableCamera(enable);
-//			if (mServiceContext.getResources().getBoolean(R.bool.enable_call_notification))
-//				LinphoneService.instance().refreshIncallIcon(mLc.getCurrentCall());
+			if (mServiceContext.getResources().getBoolean(R.bool.enable_call_notification))
+				LinphoneService.instance().refreshIncallIcon(mLc.getCurrentCall());
 		}
 	}
 
@@ -1362,8 +1362,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 
 	public static boolean reinviteWithVideo() {
-//		return CallManager.getInstance().reinviteWithVideo();
-		return true;
+		return CallManager.getInstance().reinviteWithVideo();
 	}
 
 	/**
